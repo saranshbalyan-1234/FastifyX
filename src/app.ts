@@ -60,12 +60,9 @@ export default async function serviceApp (
 
     reply.code(err.statusCode ?? 500)
 
-    let message = 'Internal Server Error'
-    if (err.statusCode && err.statusCode < 500) {
-      message = err.message
-    }
+    // let message = err.message || 'Internal Server Error'
 
-    return { message }
+    return err
   })
 
   // An attacker could search for valid URLs if your 404 error handling is not rate limited.

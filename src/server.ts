@@ -16,7 +16,7 @@ import serviceApp from './app.js'
 
 const app = Fastify({
   logger: {
-    level: 'info',
+    level: process.env.LOG_LEVEL || 'info', // Use LOG_LEVEL from .env
     transport: {
       target: 'pino-pretty', // Use pino-pretty for string logs
       options: {
@@ -25,16 +25,8 @@ const app = Fastify({
         ignore: 'pid,hostname' // Remove pid and hostname from logs
       }
     },
-    serializers: {
-      req(request) {
-        return {
-          method: request.method, // Log HTTP method
-          url: request.url, // Log request URL
-        };
-      }
-    }
   },
-  // disableRequestLogging: true, // Disable logging of incoming requests
+  disableRequestLogging: true, // Disable logging of incoming requests
   ajv: {
     customOptions: {
       coerceTypes: 'array', // change type of data to match type keyword

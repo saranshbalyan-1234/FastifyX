@@ -2,15 +2,18 @@ import { FastifyInstance } from 'fastify'
 
 export default async function (fastify: FastifyInstance) {
 
-  fastify.addHook('preHandler', function (req, reply, done) {
-  if (req.body) {
-    req.log.info({payload:req.body}, 'request body')
-  }
-  done()
-})
-
 fastify.addHook('onSend', function (req, reply, payload, done) {
-  req.log.info({response:payload}, 'response body');
+  let obj = {
+    // headers:reply.request.raw.rawHeaders,
+    method:reply.request.raw.method,
+    url:reply.request.raw.url,
+    statusCode:reply.statusCode,
+    body:reply.request.body,
+    query:reply.request.query,
+    params:reply.request.params,
+    response:payload
+  }
+  req.log.debug(obj, 'Req/Res');
   done();
 });
 
