@@ -16,6 +16,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       }
     },
     async function () {
+      fastify.log.info("file name test")
       return { message: 'Welcome to the official fastify demo!' }
     }
   )

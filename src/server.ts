@@ -24,8 +24,17 @@ const app = Fastify({
         singleLine: true, // Print logs in a single line
         ignore: 'pid,hostname' // Remove pid and hostname from logs
       }
+    },
+    serializers: {
+      req(request) {
+        return {
+          method: request.method, // Log HTTP method
+          url: request.url, // Log request URL
+        };
+      }
     }
   },
+  // disableRequestLogging: true, // Disable logging of incoming requests
   ajv: {
     customOptions: {
       coerceTypes: 'array', // change type of data to match type keyword
