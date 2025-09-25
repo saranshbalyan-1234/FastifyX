@@ -24,7 +24,7 @@ const app = Fastify({
         singleLine: true, // Print logs in a single line
         ignore: 'pid,hostname' // Remove pid and hostname from logs
       }
-    },
+    }
   },
   disableRequestLogging: true, // Disable logging of incoming requests
   ajv: {

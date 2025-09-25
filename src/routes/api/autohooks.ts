@@ -1,21 +1,25 @@
 import { FastifyInstance } from 'fastify'
 
 export default async function (fastify: FastifyInstance) {
-
-fastify.addHook('onSend', function (req, reply, payload, done) {
-  let obj = {
+  fastify.addHook('onSend', function (req, reply, payload, done) {
+    const obj = {
     // headers:reply.request.raw.rawHeaders,
-    method:reply.request.raw.method,
-    url:reply.request.raw.url,
-    statusCode:reply.statusCode,
-    body:reply.request.body,
-    query:reply.request.query,
-    params:reply.request.params,
-    response:payload
-  }
-  req.log.debug(obj, 'Req/Res');
-  done();
-});
+      method: req.method,
+      url: req.url,
+      statusCode: reply.statusCode,
+      body: req.body,
+      query: req.query,
+      params: req.params,
+      response: payload
+    }
+    req.log.debug(obj, 'Req/Res')
+    done()
+  })
+
+  fastify.addHook('onResponse', function (req, reply, done) {
+    req.log.debug({ elapsedTime: reply.elapsedTime }, 'Res Time')
+    done()
+  })
 
   fastify.addHook('onRequest', async (request, reply) => {
     if (request.url.startsWith('/api/auth/login')) {
