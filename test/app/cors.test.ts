@@ -1,7 +1,7 @@
-import { it } from 'node:test'
+import { it ,describe} from 'node:test'
 import { build } from '../helper.js'
 import assert from 'node:assert'
-
+describe('Cors', () => {
 it('should correctly handle CORS preflight requests', async (t) => {
   const app = await build(t)
 
@@ -17,4 +17,6 @@ it('should correctly handle CORS preflight requests', async (t) => {
 
   assert.strictEqual(res.statusCode, 204)
   assert.strictEqual(res.headers['access-control-allow-methods'], 'GET, POST, PUT, DELETE')
+})
+
 })

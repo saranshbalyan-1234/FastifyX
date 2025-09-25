@@ -1,7 +1,9 @@
-import { it } from 'node:test'
+import { it ,describe} from 'node:test'
 import Fastify from 'fastify'
 import assert from 'node:assert'
 import Env, { autoConfig } from '../../src/plugins/external/env.js'
+
+describe('Environment variables', () => {
 
 it('UPLOAD_DIRNAME should not contain ..', async (t) => {
   const { confKey, schema: { type, properties: { UPLOAD_DIRNAME } } } = autoConfig
@@ -26,4 +28,5 @@ it('UPLOAD_DIRNAME.default should be a valid dirname', async (t) => {
   }).finally(async () => {
     await fastify.close()
   })
+})
 })

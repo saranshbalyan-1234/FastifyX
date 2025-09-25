@@ -1,7 +1,7 @@
-import { it } from 'node:test'
+import { it ,describe} from 'node:test'
 import assert from 'node:assert'
 import { build } from '../helper.js'
-
+describe('Not Found Handler', () => {
 it('should call notFoundHandler', async (t) => {
   const app = await build(t)
 
@@ -32,4 +32,5 @@ it('should be rate limited', async (t) => {
   })
 
   assert.strictEqual(res.statusCode, 429, 'Expected 429')
+})
 })

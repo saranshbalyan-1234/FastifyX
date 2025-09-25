@@ -1,9 +1,9 @@
-import { it } from 'node:test'
+import { it ,describe} from 'node:test'
 import assert from 'node:assert'
 import fastify from 'fastify'
 import serviceApp from '../../src/app.js'
 import fp from 'fastify-plugin'
-
+describe('Error Handler', () => {
 it('should call errorHandler', async (t) => {
   const app = fastify()
   await app.register(fp(serviceApp))
@@ -24,4 +24,5 @@ it('should call errorHandler', async (t) => {
   assert.deepStrictEqual(JSON.parse(res.payload), {
     message: 'Internal Server Error'
   })
+})
 })

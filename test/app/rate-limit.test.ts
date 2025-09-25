@@ -1,7 +1,7 @@
-import { it } from 'node:test'
+import { it,describe } from 'node:test'
 import { build } from '../helper.js'
 import assert from 'node:assert'
-
+describe('Rate Limit', () => {
 it('should be rate limited', async (t) => {
   const app = await build(t)
 
@@ -20,4 +20,5 @@ it('should be rate limited', async (t) => {
   })
 
   assert.strictEqual(res.statusCode, 429)
+})
 })
