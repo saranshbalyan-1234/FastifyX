@@ -13,10 +13,10 @@
     "watch": "tsc -w",
     "dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch\" \"npm:dev:start\"",
     "dev:start": "npm run build && fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js",
-    "test": "glob -c \"tsx --test\" \"./test/**/*.ts\"",
+    "test": "glob -c \"tsx --test\" \"./test/**/*.test.ts\"",
     "standalone": "npm run build && node --env-file=.env dist/server.js",
     "lint": "eslint --ignore-pattern=dist",
-    "lint:fix": "npm run lint -- --fix"
+    "lint-fix": "npm run lint -- --fix"
   },
   "keywords": [],
   "author": "Michelet Jean <jean.antoine.michelet@gmail.com>",
