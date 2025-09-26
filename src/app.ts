@@ -47,7 +47,7 @@ export default async function serviceApp (
   fastify.setErrorHandler((err:any, request, reply) => {
     const error = {
       ...err,
-      message: err.message,
+      message: err.message || 'Internal Server Error',
       type: err.constructor.name,
       method: request.method,
       path: request.url,
@@ -58,8 +58,6 @@ export default async function serviceApp (
     fastify.log.error(err, 'Unhandled error occurred')
 
     reply.code(err.statusCode || 500)
-
-    // let message = err.message || 'Internal Server Error'
 
     return error
   })
