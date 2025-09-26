@@ -52,7 +52,8 @@ export default async function serviceApp (
       method: request.method,
       path: request.url,
       statusCode: err.statusCode || 500,
-      fatal: err.fatal || false
+      fatal: err.fatal || false,
+      errors: err.errors
     }
     fastify.log.error(err, 'Unhandled error occurred')
 
@@ -94,5 +95,6 @@ export default async function serviceApp (
         statusCode: 404,
         fatal: false
       }
+
     })
 }
