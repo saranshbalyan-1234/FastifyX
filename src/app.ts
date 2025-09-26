@@ -44,25 +44,23 @@ export default async function serviceApp (
     options: { ...opts }
   })
 
-  fastify.setErrorHandler((err, request, reply) => {
-    fastify.log.error(
-      {
-        err,
-        request: {
-          method: request.method,
-          url: request.url,
-          query: request.query,
-          params: request.params
-        }
-      },
-      'Unhandled error occurred'
-    )
+  fastify.setErrorHandler((err:any, request, reply) => {
+    const error = {
+      ...err,
+      message: err.message,
+      type: err.constructor.name,
+      method: request.method,
+      path: request.url,
+      statusCode: err.statusCode || 500,
+      fatal: err.fatal || false
+    }
+    fastify.log.error(err, 'Unhandled error occurred')
 
-    reply.code(err.statusCode ?? 500)
+    reply.code(err.statusCode || 500)
 
     // let message = err.message || 'Internal Server Error'
 
-    return err
+    return error
   })
 
   // An attacker could search for valid URLs if your 404 error handling is not rate limited.
@@ -88,6 +86,13 @@ export default async function serviceApp (
 
       reply.code(404)
 
-      return { message: 'Not Found' }
+      return {
+        message: 'Not Found',
+        type: 'NotFoundError',
+        method: request.method,
+        path: request.url,
+        statusCode: 404,
+        fatal: false
+      }
     })
 }

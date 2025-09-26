@@ -11,7 +11,14 @@ describe('Not Found Handler', () => {
     })
 
     assert.strictEqual(res.statusCode, 404)
-    assert.deepStrictEqual(JSON.parse(res.payload), { message: 'Not Found' })
+    assert.deepStrictEqual(JSON.parse(res.payload), {
+      fatal: false,
+      message: 'Not Found',
+      method: 'GET',
+      path: '/this-route-does-not-exist',
+      statusCode: 404,
+      type: 'NotFoundError'
+    })
   })
 
   it('should be rate limited', async (t) => {

@@ -21,8 +21,11 @@ test('GET /api with no login', async (t) => {
   })
 
   assert.deepStrictEqual(JSON.parse(res.payload), {
-    error: 'Unauthorized',
     message: 'You must be authenticated to access this route.',
-    statusCode: 401
+    type: 'UnauthorizedError',
+    statusCode: 401,
+    fatal: false,
+    method: 'GET',
+    path: '/api'
   })
 })

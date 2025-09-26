@@ -22,9 +22,12 @@ describe('Error Handler', () => {
     })
 
     assert.deepStrictEqual(JSON.parse(res.payload), {
-      error: 'Internal Server Error',
+      fatal: false,
       message: 'Kaboom!',
-      statusCode: 500
+      method: 'GET',
+      path: '/error',
+      statusCode: 500,
+      type: 'Error'
     })
   })
 })
