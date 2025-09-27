@@ -1,6 +1,6 @@
-import fp from 'fastify-plugin';
-import { FastifyInstance } from 'fastify';
-import forge from 'node-forge';
+import fp from 'fastify-plugin'
+import { FastifyInstance } from 'fastify'
+import forge from 'node-forge'
 
 /* ----------------------- Types ----------------------- */
 export interface SecurePlugin {
@@ -21,59 +21,59 @@ declare module 'fastify' {
 }
 
 /* ------------------- Plugin ------------------------- */
-export default fp(async function securePlugin(fastify: FastifyInstance) {
+export default fp(async function securePlugin (fastify: FastifyInstance) {
   // Generate RSA key pair
-  const { publicKey, privateKey } = forge.pki.rsa.generateKeyPair(2048);
+  const { publicKey, privateKey } = forge.pki.rsa.generateKeyPair(2048)
 
   // AES encryption
-  function aesEncrypt(data: string, key: string) {
-    const cipher = forge.cipher.createCipher('AES-CBC', key);
-    const iv = forge.random.getBytesSync(16);
-    cipher.start({ iv });
-    cipher.update(forge.util.createBuffer(data, 'utf8'));
-    cipher.finish();
-    const encrypted = cipher.output.getBytes();
-    return { iv: forge.util.encode64(iv), encrypted: forge.util.encode64(encrypted) };
+  function aesEncrypt (data: string, key: string) {
+    const cipher = forge.cipher.createCipher('AES-CBC', key)
+    const iv = forge.random.getBytesSync(16)
+    cipher.start({ iv })
+    cipher.update(forge.util.createBuffer(data, 'utf8'))
+    cipher.finish()
+    const encrypted = cipher.output.getBytes()
+    return { iv: forge.util.encode64(iv), encrypted: forge.util.encode64(encrypted) }
   }
 
   // AES decryption
-  function aesDecrypt(encrypted: string, key: string, iv: string) {
-    const decipher = forge.cipher.createDecipher('AES-CBC', key);
-    decipher.start({ iv: forge.util.decode64(iv) });
-    decipher.update(forge.util.createBuffer(forge.util.decode64(encrypted)));
-    decipher.finish();
-    return forge.util.decodeUtf8(decipher.output.getBytes());
+  function aesDecrypt (encrypted: string, key: string, iv: string) {
+    const decipher = forge.cipher.createDecipher('AES-CBC', key)
+    decipher.start({ iv: forge.util.decode64(iv) })
+    decipher.update(forge.util.createBuffer(forge.util.decode64(encrypted)))
+    decipher.finish()
+    return forge.util.decodeUtf8(decipher.output.getBytes())
   }
 
   // RSA encryption
-  function rsaEncrypt(data: string) {
-    return forge.util.encode64(publicKey.encrypt(data));
+  function rsaEncrypt (data: string) {
+    return forge.util.encode64(publicKey.encrypt(data))
   }
 
   // RSA decryption
-  function rsaDecrypt(encrypted: string) {
-    return privateKey.decrypt(forge.util.decode64(encrypted));
+  function rsaDecrypt (encrypted: string) {
+    return privateKey.decrypt(forge.util.decode64(encrypted))
   }
 
   // High-level encrypt function (supports string or JSON)
-  function encrypt(data: string | object) {
-    const plaintext = typeof data === 'string' ? data : JSON.stringify(data);
+  function encrypt (data: string | object) {
+    const plaintext = typeof data === 'string' ? data : JSON.stringify(data)
 
-    const aesKey = forge.random.getBytesSync(16);
-    const encryptedAESKey = rsaEncrypt(aesKey);
-    const { iv, encrypted } = aesEncrypt(plaintext, aesKey);
+    const aesKey = forge.random.getBytesSync(16)
+    const encryptedAESKey = rsaEncrypt(aesKey)
+    const { iv, encrypted } = aesEncrypt(plaintext, aesKey)
 
-    return { encryptedAESKey, encryptedData: encrypted, iv };
+    return { encryptedAESKey, encryptedData: encrypted, iv }
   }
 
   // High-level decrypt function (auto-detect JSON)
-  function decrypt(encryptedAESKey: string, encryptedData: string, iv: string) {
-    const decryptedStr = aesDecrypt(encryptedData, rsaDecrypt(encryptedAESKey), iv);
+  function decrypt (encryptedAESKey: string, encryptedData: string, iv: string) {
+    const decryptedStr = aesDecrypt(encryptedData, rsaDecrypt(encryptedAESKey), iv)
 
     try {
-      return JSON.parse(decryptedStr);
+      return JSON.parse(decryptedStr)
     } catch {
-      return decryptedStr;
+      return decryptedStr
     }
   }
 
@@ -86,5 +86,5 @@ export default fp(async function securePlugin(fastify: FastifyInstance) {
     aesDecrypt,
     encrypt,
     decrypt
-  } as SecurePlugin);
-});
+  } as SecurePlugin)
+})
