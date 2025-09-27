@@ -10,16 +10,17 @@ export default async function (fastify: FastifyInstance) {
       body: req.body,
       query: req.query,
       params: req.params,
-      response: payload
+      response: payload,
+      resTime: reply.elapsedTime 
     }
     req.log.debug(obj, 'Req/Res')
     done()
   })
 
-  fastify.addHook('onResponse', function (req, reply, done) {
-    req.log.debug({ elapsedTime: reply.elapsedTime }, 'Res Time')
-    done()
-  })
+  // fastify.addHook('onResponse', function (req, reply, done) {
+  //   req.log.debug({ elapsedTime: reply.elapsedTime }, 'Res Time')
+  //   done()
+  // })
 
   fastify.addHook('onRequest', async (request, reply) => {
     if (request.url.startsWith('/api/auth/login')) {
