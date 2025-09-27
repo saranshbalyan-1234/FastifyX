@@ -28,6 +28,3 @@ class Error extends OriginalError {
 declare global {
   var HttpError: typeof Error;
 }
-
-// Export for direct import if needed
-export { Error as HttpError };
