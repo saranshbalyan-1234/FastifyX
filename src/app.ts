@@ -48,7 +48,7 @@ export default async function serviceApp (
     const error = {
       ...err,
       message: err.message || 'Internal Server Error',
-      type: err.constructor.name,
+      type: err.constructor.name || 'Error',
       method: request.method,
       path: request.url,
       statusCode: err.statusCode || 500,
