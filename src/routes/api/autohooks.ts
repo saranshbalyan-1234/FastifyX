@@ -22,13 +22,13 @@ export default async function (fastify: FastifyInstance) {
   //   done()
   // })
 
-  fastify.addHook('onRequest', async (request, reply) => {
-    if (request.url.startsWith('/api/auth/login')) {
-      return
-    }
+  // fastify.addHook('onRequest', async (request, reply) => {
+  //   if (request.url.startsWith('/api/auth/login')) {
+  //     return
+  //   }
 
-    if (!request.session.user) {
-      reply.unauthorized('You must be authenticated to access this route.')
-    }
-  })
+  //   if (!request.session.user) {
+  //     reply.unauthorized('You must be authenticated to access this route.')
+  //   }
+  // })
 }
