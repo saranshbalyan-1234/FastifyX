@@ -93,6 +93,5 @@ export default async function serviceApp (
         statusCode: 404,
         fatal: false
       }
-
     })
 }

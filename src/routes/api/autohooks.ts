@@ -3,7 +3,7 @@ import { FastifyInstance } from 'fastify'
 export default async function (fastify: FastifyInstance) {
   fastify.addHook('onSend', function (req, reply, payload, done) {
     const obj = {
-    // headers:reply.request.raw.rawHeaders,
+      tenant: req.headers['x-tenant-id'],
       method: req.method,
       url: req.url,
       statusCode: reply.statusCode,
@@ -11,7 +11,7 @@ export default async function (fastify: FastifyInstance) {
       query: req.query,
       params: req.params,
       response: payload,
-      resTime: reply.elapsedTime 
+      time: reply.elapsedTime
     }
     req.log.debug(obj, 'Req/Res')
     done()
