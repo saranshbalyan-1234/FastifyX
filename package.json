@@ -14,7 +14,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "glob -c \"tsx --test\" \"./test/**/*.test.ts\"",
-    "start": "npm run build && node --env-file=.env dist/server.js",
+    "start": "npm run build && node --env-file=.env --env-file=.env.server dist/server.js",
     "lint": "eslint --ignore-pattern=dist",
     "lint-fix": "npm run lint -- --fix"
   },

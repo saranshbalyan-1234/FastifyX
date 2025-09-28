@@ -23,7 +23,12 @@ declare module 'fastify' {
 /* ------------------- Plugin ------------------------- */
 export default fp(async function securePlugin (fastify: FastifyInstance) {
   // Generate RSA key pair
-  const { publicKey, privateKey } = forge.pki.rsa.generateKeyPair(2048)
+  // const { publicKey, privateKey } = forge.pki.rsa.generateKeyPair(2048)
+  const publicKeyPem = fastify.config.DEFAULT_PUBLIC_KEY.replace(/\\n/g, '\n')
+  const privateKeyPem = fastify.config.DEFAULT_PRIVATE_KEY.replace(/\\n/g, '\n')
+
+  const publicKey = forge.pki.publicKeyFromPem(publicKeyPem)
+  const privateKey = forge.pki.privateKeyFromPem(privateKeyPem)
 
   // AES encryption
   function aesEncrypt (data: string, key: string) {
@@ -79,7 +84,7 @@ export default fp(async function securePlugin (fastify: FastifyInstance) {
 
   // Decorate Fastify instance
   fastify.decorate('secure', {
-    publicKey: forge.pki.publicKeyToPem(publicKey),
+    publicKey: publicKeyPem,
     rsaEncrypt,
     rsaDecrypt,
     aesEncrypt,
@@ -87,4 +92,4 @@ export default fp(async function securePlugin (fastify: FastifyInstance) {
     encrypt,
     decrypt
   } as SecurePlugin)
-})
+}, { dependencies: ['env'] })

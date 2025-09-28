@@ -17,7 +17,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     },
     async function () {
       fastify.log.info('file name test')
-      throw new HttpError('Test error logging',400)
       return { message: 'Welcome to the official fastify demo!' }
     }
   )

@@ -1,4 +1,5 @@
-import env from '@fastify/env'
+import fp from 'fastify-plugin'
+import env, { FastifyEnvOptions } from '@fastify/env'
 
 declare module 'fastify' {
   export interface FastifyInstance {
@@ -15,6 +16,8 @@ declare module 'fastify' {
       RATE_LIMIT_MAX: number;
       UPLOAD_DIRNAME: string;
       UPLOAD_TASKS_DIRNAME: string;
+      DEFAULT_PUBLIC_KEY: string;
+      DEFAULT_PRIVATE_KEY: string;
     };
   }
 }
@@ -29,7 +32,9 @@ const schema = {
     'MYSQL_DATABASE',
     'COOKIE_SECRET',
     'COOKIE_NAME',
-    'COOKIE_SECURED'
+    'COOKIE_SECURED',
+    'DEFAULT_PRIVATE_KEY',
+    'DEFAULT_PUBLIC_KEY'
   ],
   properties: {
     // Database
@@ -77,6 +82,12 @@ const schema = {
     UPLOAD_TASKS_DIRNAME: {
       type: 'string',
       default: 'tasks'
+    },
+    DEFAULT_PRIVATE_KEY: {
+      type: 'string'
+    },
+    DEFAULT_PUBLIC_KEY: {
+      type: 'string'
     }
   }
 }
@@ -107,4 +118,10 @@ export const autoConfig = {
  *
  * @see {@link https://github.com/fastify/fastify-env}
  */
-export default env
+// export default env
+
+export default fp(async (fastify) => {
+  await fastify.register<FastifyEnvOptions>(env, autoConfig)
+}, {
+  name: 'env' // 👈 now this plugin has a name for dependency management
+})
