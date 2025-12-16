@@ -9,8 +9,8 @@ export const CredentialsSchema = Type.Object({
 export interface Credentials extends Static<typeof CredentialsSchema> {}
 
 export interface Auth {
-  id: number;
-  username: string;
-  email: string,
+  id: number
+  username: string
+  email: string
   roles: string[]
 }

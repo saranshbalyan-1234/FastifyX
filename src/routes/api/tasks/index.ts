@@ -1,7 +1,4 @@
-import {
-  FastifyPluginAsyncTypebox,
-  Type
-} from '@fastify/type-provider-typebox'
+import { FastifyPluginAsyncTypebox, Type } from '@fastify/type-provider-typebox'
 import {
   TaskSchema,
   CreateTaskSchema,
@@ -28,7 +25,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       }
     },
     async function (request) {
-      return tasksRepository.paginate(request.query)
+      // Fixed type mismatch in 'request.query' by ensuring default values for 'page' and 'limit'.
+      return tasksRepository.paginate({
+        ...request.query,
+        page: request.query.page ?? 1,
+        limit: request.query.limit ?? 10
+      })
     }
   )
 
@@ -72,8 +74,10 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       }
     },
     async function (request, reply) {
+      // Fixed type mismatch in 'newTask' by ensuring 'name' is always a string.
       const newTask = {
         ...request.body,
+        name: request.body.name ?? '',
         author_id: request.session.user.id,
         status: TaskStatusEnum.New
       }
@@ -287,20 +291,23 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     async function (request, reply) {
       const { filename } = request.params
 
-      return fastify.knex
-        .transaction(async (trx) => {
-          const hasBeenUpdated = await tasksRepository.deleteFilename(filename, null, trx)
+      return fastify.knex.transaction(async (trx) => {
+        const hasBeenUpdated = await tasksRepository.deleteFilename(
+          filename,
+          null,
+          trx
+        )
 
-          if (!hasBeenUpdated) {
-            return reply.notFound(`No task has filename "${filename}"`)
-          }
+        if (!hasBeenUpdated) {
+          return reply.notFound(`No task has filename "${filename}"`)
+        }
 
-          await tasksFileManager.delete(filename)
+        await tasksFileManager.delete(filename)
 
-          reply.code(204)
+        reply.code(204)
 
-          return { message: 'File deleted successfully' }
-        })
+        return { message: 'File deleted successfully' }
+      })
     }
   )
 
@@ -326,7 +333,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       reply.header('Content-Type', 'application/gzip')
       reply.header(
         'Content-Disposition',
-      `attachment; filename="${encodeURIComponent('tasks.csv.gz')}"`
+        `attachment; filename="${encodeURIComponent('tasks.csv.gz')}"`
       )
 
       return queryStream.pipe(csvTransform).pipe(createGzip())

@@ -16,6 +16,9 @@ describe('Cors', () => {
     })
 
     assert.strictEqual(res.statusCode, 204)
-    assert.strictEqual(res.headers['access-control-allow-methods'], 'GET, POST, PUT, DELETE')
+    assert.strictEqual(
+      res.headers['access-control-allow-methods'],
+      'GET, POST, PUT, DELETE'
+    )
   })
 })

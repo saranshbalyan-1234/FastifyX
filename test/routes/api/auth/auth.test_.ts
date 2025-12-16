@@ -7,7 +7,10 @@ describe('Auth api', () => {
     it('Transaction should rollback on error', async (t) => {
       const app = await build(t)
 
-      const { mock: mockCompare } = t.mock.method(app.passwordManager, 'compare')
+      const { mock: mockCompare } = t.mock.method(
+        app.passwordManager,
+        'compare'
+      )
       mockCompare.mockImplementationOnce((value: string, hash: string) => {
         throw new Error('Kaboom!')
       })
@@ -26,7 +29,7 @@ describe('Auth api', () => {
       assert.strictEqual(mockCompare.callCount(), 1)
 
       const arg = mockLogError.calls[0].arguments[0] as unknown as {
-        err: Error;
+        err: Error
       }
 
       assert.strictEqual(res.statusCode, 500)

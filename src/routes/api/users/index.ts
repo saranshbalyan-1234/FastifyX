@@ -1,7 +1,4 @@
-import {
-  FastifyPluginAsyncTypebox,
-  Type
-} from '@fastify/type-provider-typebox'
+import { FastifyPluginAsyncTypebox, Type } from '@fastify/type-provider-typebox'
 import { UpdateCredentialsSchema } from '../../../schemas/users.js'
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
@@ -35,14 +32,14 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       const { newPassword, currentPassword } = request.body
       const { email } = request.session.user
 
-      const user = await usersRepository.findByEmail(email)
+      const user = await usersRepository.findByEmail(email ?? '')
 
       if (!user) {
         return reply.code(401).send({ message: 'User does not exist.' })
       }
 
       const isPasswordValid = await passwordManager.compare(
-        currentPassword,
+        currentPassword ?? '',
         user.password
       )
 
@@ -52,10 +49,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
 
       if (newPassword === currentPassword) {
         reply.status(400)
-        return { message: 'New password cannot be the same as the current password.' }
+        return {
+          message: 'New password cannot be the same as the current password.'
+        }
       }
 
-      const hashedPassword = await passwordManager.hash(newPassword)
+      const hashedPassword = await passwordManager.hash(newPassword ?? '')
       await usersRepository.updatePassword(email, hashedPassword)
 
       return { message: 'Password updated successfully' }

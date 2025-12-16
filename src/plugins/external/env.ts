@@ -4,21 +4,21 @@ import env, { FastifyEnvOptions } from '@fastify/env'
 declare module 'fastify' {
   export interface FastifyInstance {
     config: {
-      PORT: number;
-      MYSQL_HOST: string;
-      MYSQL_PORT: string;
-      MYSQL_USER: string;
-      MYSQL_PASSWORD: string;
-      MYSQL_DATABASE: string;
-      COOKIE_SECRET: string;
-      COOKIE_NAME: string;
-      COOKIE_SECURED: boolean;
-      RATE_LIMIT_MAX: number;
-      UPLOAD_DIRNAME: string;
-      UPLOAD_TASKS_DIRNAME: string;
-      DEFAULT_PUBLIC_KEY: string;
-      DEFAULT_PRIVATE_KEY: string;
-    };
+      PORT: number
+      MYSQL_HOST: string
+      MYSQL_PORT: string
+      MYSQL_USER: string
+      MYSQL_PASSWORD: string
+      MYSQL_DATABASE: string
+      COOKIE_SECRET: string
+      COOKIE_NAME: string
+      COOKIE_SECURED: boolean
+      RATE_LIMIT_MAX: number
+      UPLOAD_DIRNAME: string
+      UPLOAD_TASKS_DIRNAME: string
+      DEFAULT_PUBLIC_KEY: string
+      DEFAULT_PRIVATE_KEY: string
+    }
   }
 }
 
@@ -120,8 +120,11 @@ export const autoConfig = {
  */
 // export default env
 
-export default fp(async (fastify) => {
-  await fastify.register<FastifyEnvOptions>(env, autoConfig)
-}, {
-  name: 'env' // 👈 now this plugin has a name for dependency management
-})
+export default fp(
+  async (fastify) => {
+    await fastify.register<FastifyEnvOptions>(env, autoConfig)
+  },
+  {
+    name: 'env' // 👈 now this plugin has a name for dependency management
+  }
+)

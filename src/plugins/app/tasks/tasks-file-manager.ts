@@ -10,7 +10,7 @@ declare module 'fastify' {
   }
 }
 
-function createUploader (fastify: FastifyInstance) {
+function createUploader(fastify: FastifyInstance) {
   const { fileManager } = fastify
 
   const uploadPath = path.join(
@@ -25,16 +25,18 @@ function createUploader (fastify: FastifyInstance) {
   fileManager.ensureDir(uploadPath)
   fileManager.ensureDir(tempPath)
 
-  const buildFilePath = (filename: string) => fileManager.safeJoin(uploadPath, filename)
-  const buildTempFilePath = (filename: string) => fileManager.safeJoin(tempPath, filename)
+  const buildFilePath = (filename: string) =>
+    fileManager.safeJoin(uploadPath, filename)
+  const buildTempFilePath = (filename: string) =>
+    fileManager.safeJoin(tempPath, filename)
 
   return {
-    async upload (filename: string, file: fastifyMultipart.MultipartFile) {
+    async upload(filename: string, file: fastifyMultipart.MultipartFile) {
       const filePath = buildFilePath(filename)
       await fileManager.upload(file, filePath)
     },
 
-    async moveOldToTemp (oldFilename: string) {
+    async moveOldToTemp(oldFilename: string) {
       const oldPath = buildFilePath(oldFilename)
       const randomPart = fileManager.randomSuffix()
       const oldTempFilename = `temp-${randomPart}-${oldFilename}`
@@ -44,14 +46,14 @@ function createUploader (fastify: FastifyInstance) {
       return oldTempFilename
     },
 
-    async moveTempToOld (tempFilename: string, oldFilename: string) {
+    async moveTempToOld(tempFilename: string, oldFilename: string) {
       const tempPath = buildTempFilePath(tempFilename)
       const oldPath = buildFilePath(oldFilename)
 
       await fileManager.move(tempPath, oldPath)
     },
 
-    async delete (filename: string) {
+    async delete(filename: string) {
       const filePath = buildFilePath(filename)
       await fileManager.unlink(filePath)
     },
@@ -60,9 +62,12 @@ function createUploader (fastify: FastifyInstance) {
   }
 }
 
-export default fp(async (fastify) => {
-  fastify.decorate('tasksFileManager', createUploader(fastify))
-}, {
-  name: 'tasks-file-manager',
-  dependencies: ['file-manager']
-})
+export default fp(
+  async (fastify) => {
+    fastify.decorate('tasksFileManager', createUploader(fastify))
+  },
+  {
+    name: 'tasks-file-manager',
+    dependencies: ['file-manager']
+  }
+)

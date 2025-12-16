@@ -15,7 +15,7 @@ import FormData from 'form-data'
 import os from 'node:os'
 import { gunzipSync } from 'node:zlib'
 
-async function createUser (
+async function createUser(
   app: FastifyInstance,
   userData: Partial<{ email: string; username: string; password: string }>
 ) {
@@ -23,13 +23,13 @@ async function createUser (
   return id
 }
 
-async function createTask (app: FastifyInstance, taskData: Partial<Task>) {
+async function createTask(app: FastifyInstance, taskData: Partial<Task>) {
   const [id] = await app.knex<Task>('tasks').insert(taskData)
 
   return id
 }
 
-async function uploadImageForTask (
+async function uploadImageForTask(
   app: FastifyInstance,
   taskId: number,
   filePath: string,
@@ -272,7 +272,10 @@ describe('Tasks api (logged user only)', () => {
         payload: invalidTaskData
       })
 
-      expectValidationError(res, 'body/name must NOT have fewer than 1 characters')
+      expectValidationError(
+        res,
+        'body/name must NOT have fewer than 1 characters'
+      )
     })
 
     it('should create a new task', async (t) => {
@@ -515,7 +518,11 @@ describe('Tasks api (logged user only)', () => {
 
     before(async () => {
       app = await build()
-      uploadDir = path.join(import.meta.dirname, '../../../../', app.config.UPLOAD_DIRNAME)
+      uploadDir = path.join(
+        import.meta.dirname,
+        '../../../../',
+        app.config.UPLOAD_DIRNAME
+      )
       uploadDirTask = path.join(uploadDir, app.config.UPLOAD_TASKS_DIRNAME)
       assert.ok(fs.existsSync(uploadDir))
 
@@ -677,7 +684,7 @@ describe('Tasks api (logged user only)', () => {
         assert.strictEqual(mockLogError.callCount(), 1)
 
         const arg = mockLogError.calls[0].arguments[0] as unknown as {
-          err: Error;
+          err: Error
         }
 
         assert.deepStrictEqual(arg.err.message, 'Kaboom!')
@@ -721,7 +728,10 @@ describe('Tasks api (logged user only)', () => {
       before(async () => {
         app = await build()
 
-        await app.knex<Task>('tasks').where({ id: taskId }).update({ filename: null })
+        await app
+          .knex<Task>('tasks')
+          .where({ id: taskId })
+          .update({ filename: null })
 
         const files = fs.readdirSync(uploadDirTask)
         files.forEach((file) => {
@@ -756,11 +766,10 @@ describe('Tasks api (logged user only)', () => {
         })
 
         assert.strictEqual(res.statusCode, 204)
-        const files = fs.readdirSync(uploadDirTask)
-          .filter((name) => {
-            const full = path.join(uploadDirTask, name)
-            return fs.statSync(full).isFile() && !name.startsWith('.')
-          })
+        const files = fs.readdirSync(uploadDirTask).filter((name) => {
+          const full = path.join(uploadDirTask, name)
+          return fs.statSync(full).isFile() && !name.startsWith('.')
+        })
         assert.strictEqual(files.length, 0)
       })
 
@@ -799,7 +808,8 @@ describe('Tasks api (logged user only)', () => {
         const arg = mockLogWarn.calls[0].arguments[0]
 
         assert.strictEqual(mockLogWarn.callCount(), 1)
-        const filePath = app.tasksFileManager.buildFilePath('does_not_exist.png')
+        const filePath =
+          app.tasksFileManager.buildFilePath('does_not_exist.png')
         assert.deepStrictEqual(arg, `File path '${filePath}' not found`)
       })
 
@@ -822,7 +832,7 @@ describe('Tasks api (logged user only)', () => {
         assert.strictEqual(mockLogError.callCount(), 1)
 
         const arg = mockLogError.calls[0].arguments[0] as unknown as {
-          err: Error;
+          err: Error
         }
 
         assert.deepStrictEqual(arg.err.message, 'Kaboom!')
@@ -870,7 +880,10 @@ describe('Tasks api (logged user only)', () => {
       assert.equal(lines.length - 1, 1001)
 
       assert.ok(lines[1].includes('Task 1,1,2,task.png,in-progress'))
-      assert.equal(lines[0], 'id,name,author_id,assigned_user_id,filename,status,created_at,updated_at')
+      assert.equal(
+        lines[0],
+        'id,name,author_id,assigned_user_id,filename,status,created_at,updated_at'
+      )
     })
   })
 })

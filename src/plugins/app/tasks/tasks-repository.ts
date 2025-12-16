@@ -11,23 +11,23 @@ import { Knex } from 'knex'
 
 declare module 'fastify' {
   export interface FastifyInstance {
-    tasksRepository: ReturnType<typeof createRepository>;
+    tasksRepository: ReturnType<typeof createRepository>
   }
 }
 
 type CreateTask = Static<typeof CreateTaskSchema>
 type UpdateTask = Omit<Static<typeof UpdateTaskSchema>, 'assigned_user_id'> & {
-  assigned_user_id?: number | null;
+  assigned_user_id?: number | null
   filename?: string
 }
 
 type TaskQuery = Static<typeof QueryTaskPaginationSchema>
 
-function createRepository (fastify: FastifyInstance) {
+function createRepository(fastify: FastifyInstance) {
   const knex = fastify.knex
 
   return {
-    async paginate (q: TaskQuery) {
+    async paginate(q: TaskQuery) {
       const offset = (q.page - 1) * q.limit
 
       const query = fastify
@@ -58,11 +58,11 @@ function createRepository (fastify: FastifyInstance) {
       }
     },
 
-    async findById (id: number, trx?: Knex) {
+    async findById(id: number, trx?: Knex) {
       return (trx ?? knex)<Task>('tasks').where({ id }).first()
     },
 
-    async findByFilename (filename: string) {
+    async findByFilename(filename: string) {
       return await fastify
         .knex<Task>('tasks')
         .select('filename')
@@ -70,12 +70,12 @@ function createRepository (fastify: FastifyInstance) {
         .first()
     },
 
-    async create (newTask: CreateTask) {
+    async create(newTask: CreateTask) {
       const [id] = await knex<Task>('tasks').insert(newTask)
       return id
     },
 
-    async update (id: number, changes: UpdateTask, trx?: Knex) {
+    async update(id: number, changes: UpdateTask, trx?: Knex) {
       const affectedRows = await (trx ?? knex)('tasks')
         .where({ id })
         .update(changes)
@@ -87,7 +87,7 @@ function createRepository (fastify: FastifyInstance) {
       return this.findById(id)
     },
 
-    async deleteFilename (filename: string, value: string | null, trx: Knex) {
+    async deleteFilename(filename: string, value: string | null, trx: Knex) {
       const affectedRows = await trx('tasks')
         .where({ filename })
         .update({ filename: value })
@@ -95,13 +95,13 @@ function createRepository (fastify: FastifyInstance) {
       return affectedRows > 0
     },
 
-    async delete (id: number) {
+    async delete(id: number) {
       const affectedRows = await knex<Task>('tasks').where({ id }).delete()
 
       return affectedRows > 0
     },
 
-    createStream () {
+    createStream() {
       return knex.select('*').from('tasks').stream()
     }
   }

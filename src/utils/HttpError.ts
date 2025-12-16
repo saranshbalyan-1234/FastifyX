@@ -1,11 +1,11 @@
 const OriginalError = global.Error
 
 // Internal name doesn’t matter
-class Error extends OriginalError {
+class HttpError extends OriginalError {
   statusCode: number
   type: string
 
-  constructor (message: string, statusCode = 500) {
+  constructor(message: string, statusCode = 500) {
     super(message)
 
     Object.setPrototypeOf(this, new.target.prototype)
@@ -22,9 +22,14 @@ class Error extends OriginalError {
 }
 
 // Attach globally
-(global as any).HttpError = Error
+;(global as any).HttpError = HttpError
 
 // Typings for TypeScript
+export {} // Ensure this file is treated as a module
 declare global {
-  var HttpError: typeof Error
+  // Avoid self-referencing by using a workaround
+  // Define a separate interface for the global HttpError type
+  var HttpError: {
+    new (message: string, statusCode?: number): HttpError
+  }
 }

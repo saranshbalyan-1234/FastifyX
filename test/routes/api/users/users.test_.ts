@@ -4,16 +4,23 @@ import { build } from '../../../helper.js'
 import { FastifyInstance } from 'fastify'
 import { scryptHash } from '../../../../src/plugins/app/password-manager.js'
 
-async function createUser (app: FastifyInstance, userData: Partial<{ username: string; email: string; password: string }>) {
+async function createUser(
+  app: FastifyInstance,
+  userData: Partial<{ username: string; email: string; password: string }>
+) {
   const [id] = await app.knex('users').insert(userData)
   return id
 }
 
-async function deleteUser (app: FastifyInstance, username: string) {
+async function deleteUser(app: FastifyInstance, username: string) {
   await app.knex('users').delete().where({ username })
 }
 
-async function updatePasswordWithLoginInjection (app: FastifyInstance, username: string, payload: { currentPassword: string; newPassword: string }) {
+async function updatePasswordWithLoginInjection(
+  app: FastifyInstance,
+  username: string,
+  payload: { currentPassword: string; newPassword: string }
+) {
   return app.injectWithLogin(`${username}@example.com`, {
     method: 'PUT',
     url: '/api/users/update-password',
@@ -34,16 +41,23 @@ describe('Users API', async () => {
   })
 
   it('Should enforce rate limiting by returning a 429 status after exceeding 3 password update attempts within 1 minute', async () => {
-    await createUser(app, { username: 'random-user-0', email: 'random-user-0@example.com', password: hash })
-
-    const loginResponse = await app.injectWithLogin('random-user-0@example.com', {
-      method: 'POST',
-      url: '/api/auth/login',
-      payload: {
-        email: 'random-user-0@example.com',
-        password: 'Password123$'
-      }
+    await createUser(app, {
+      username: 'random-user-0',
+      email: 'random-user-0@example.com',
+      password: hash
     })
+
+    const loginResponse = await app.injectWithLogin(
+      'random-user-0@example.com',
+      {
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          email: 'random-user-0@example.com',
+          password: 'Password123$'
+        }
+      }
+    )
 
     app.config = {
       ...app.config,
@@ -83,67 +97,99 @@ describe('Users API', async () => {
   })
 
   it('Should update the password successfully', async () => {
-    await createUser(app, { username: 'random-user-1', email: 'random-user-1@example.com', password: hash })
+    await createUser(app, {
+      username: 'random-user-1',
+      email: 'random-user-1@example.com',
+      password: hash
+    })
     const res = await updatePasswordWithLoginInjection(app, 'random-user-1', {
       currentPassword: 'Password123$',
       newPassword: 'NewPassword123$'
     })
 
     assert.strictEqual(res.statusCode, 200)
-    assert.deepStrictEqual(JSON.parse(res.payload), { message: 'Password updated successfully' })
+    assert.deepStrictEqual(JSON.parse(res.payload), {
+      message: 'Password updated successfully'
+    })
 
     await deleteUser(app, 'random-user-1')
   })
 
   it('Should return 400 if the new password is the same as current password', async () => {
-    await createUser(app, { username: 'random-user-2', email: 'random-user-2@example.com', password: hash })
+    await createUser(app, {
+      username: 'random-user-2',
+      email: 'random-user-2@example.com',
+      password: hash
+    })
     const res = await updatePasswordWithLoginInjection(app, 'random-user-2', {
       currentPassword: 'Password123$',
       newPassword: 'Password123$'
     })
 
     assert.strictEqual(res.statusCode, 400)
-    assert.deepStrictEqual(JSON.parse(res.payload), { message: 'New password cannot be the same as the current password.' })
+    assert.deepStrictEqual(JSON.parse(res.payload), {
+      message: 'New password cannot be the same as the current password.'
+    })
 
     await deleteUser(app, 'random-user-2')
   })
 
   it('Should return 400 if the newPassword password not match the required pattern', async () => {
-    await createUser(app, { username: 'random-user-3', email: 'random-user-3@example.com', password: hash })
+    await createUser(app, {
+      username: 'random-user-3',
+      email: 'random-user-3@example.com',
+      password: hash
+    })
     const res = await updatePasswordWithLoginInjection(app, 'random-user-3', {
       currentPassword: 'Password123$',
       newPassword: 'password123$'
     })
 
     assert.strictEqual(res.statusCode, 400)
-    assert.deepStrictEqual(JSON.parse(res.payload), { message: 'body/newPassword must match pattern "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).*$"' })
+    assert.deepStrictEqual(JSON.parse(res.payload), {
+      message:
+        'body/newPassword must match pattern "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).*$"'
+    })
 
     await deleteUser(app, 'random-user-3')
   })
 
   it('Should return 401 the current password is incorrect', async () => {
-    await createUser(app, { username: 'random-user-4', email: 'random-user-4@example.com', password: hash })
+    await createUser(app, {
+      username: 'random-user-4',
+      email: 'random-user-4@example.com',
+      password: hash
+    })
     const res = await updatePasswordWithLoginInjection(app, 'random-user-4', {
       currentPassword: 'WrongPassword123$',
       newPassword: 'Password123$'
     })
 
     assert.strictEqual(res.statusCode, 401)
-    assert.deepStrictEqual(JSON.parse(res.payload), { message: 'Invalid current password.' })
+    assert.deepStrictEqual(JSON.parse(res.payload), {
+      message: 'Invalid current password.'
+    })
 
     await deleteUser(app, 'random-user-4')
   })
 
   it('Should return 401 if user does not exist in the database', async () => {
-    await createUser(app, { username: 'random-user-5', email: 'random-user-5@example.com', password: hash })
-    const loginResponse = await app.injectWithLogin('random-user-5@example.com', {
-      method: 'POST',
-      url: '/api/auth/login',
-      payload: {
-        email: 'random-user-5@example.com',
-        password: 'Password123$'
-      }
+    await createUser(app, {
+      username: 'random-user-5',
+      email: 'random-user-5@example.com',
+      password: hash
     })
+    const loginResponse = await app.injectWithLogin(
+      'random-user-5@example.com',
+      {
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          email: 'random-user-5@example.com',
+          password: 'Password123$'
+        }
+      }
+    )
 
     assert.strictEqual(loginResponse.statusCode, 200)
 
@@ -167,7 +213,9 @@ describe('Users API', async () => {
     })
 
     assert.strictEqual(res.statusCode, 401)
-    assert.deepStrictEqual(JSON.parse(res.payload), { message: 'User does not exist.' })
+    assert.deepStrictEqual(JSON.parse(res.payload), {
+      message: 'User does not exist.'
+    })
     await deleteUser(app, 'random-user-5')
   })
 
@@ -177,7 +225,11 @@ describe('Users API', async () => {
       throw new Error()
     })
 
-    await createUser(app, { username: 'random-user-6', email: 'random-user-6@example.com', password: hash })
+    await createUser(app, {
+      username: 'random-user-6',
+      email: 'random-user-6@example.com',
+      password: hash
+    })
 
     const res = await updatePasswordWithLoginInjection(app, 'random-user-6', {
       currentPassword: 'Password123$',
@@ -185,7 +237,9 @@ describe('Users API', async () => {
     })
 
     assert.strictEqual(res.statusCode, 500)
-    assert.deepStrictEqual(JSON.parse(res.payload), { message: 'Internal Server Error' })
+    assert.deepStrictEqual(JSON.parse(res.payload), {
+      message: 'Internal Server Error'
+    })
 
     await deleteUser(app, 'random-user-6')
   })

@@ -3,7 +3,7 @@ import Fastify from 'fastify'
 import scryptPlugin from '../../src/plugins/app/password-manager.js'
 import assert from 'node:assert'
 describe('Hashing', () => {
-  test('scrypt works standalone', async t => {
+  test('scrypt works standalone', async (t) => {
     const app = Fastify()
 
     t.after(() => app.close())

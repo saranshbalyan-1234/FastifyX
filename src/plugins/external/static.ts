@@ -4,7 +4,11 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 export const autoConfig = (fastify: FastifyInstance): FastifyStaticOptions => {
-  const dirPath = path.join(import.meta.dirname, '../../..', fastify.config.UPLOAD_DIRNAME)
+  const dirPath = path.join(
+    import.meta.dirname,
+    '../../..',
+    fastify.config.UPLOAD_DIRNAME
+  )
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath)
   }

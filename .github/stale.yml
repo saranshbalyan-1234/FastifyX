@@ -4,12 +4,12 @@ daysUntilStale: 15
 daysUntilClose: 7
 # Issues with these labels will never be considered stale
 exemptLabels:
-  - "discussion"
-  - "feature request"
-  - "bug"
-  - "help wanted"
-  - "plugin suggestion"
-  - "good first issue"
+  - 'discussion'
+  - 'feature request'
+  - 'bug'
+  - 'help wanted'
+  - 'plugin suggestion'
+  - 'good first issue'
 # Label to use when marking an issue as stale
 staleLabel: stale
 # Comment to post when marking an issue as stale. Set to `false` to disable

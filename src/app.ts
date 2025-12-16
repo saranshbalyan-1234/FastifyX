@@ -2,7 +2,7 @@
  * If you would like to turn your application into a standalone executable, look at server.js file
  */
 
-import path from 'node:path'
+import * as path from 'path'
 import fastifyAutoload from '@fastify/autoload'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 import './utils/HttpError.js'
@@ -15,7 +15,7 @@ export const options = {
   }
 }
 
-export default async function serviceApp (
+export default async function serviceApp(
   fastify: FastifyInstance,
   opts: FastifyPluginOptions
 ) {
@@ -23,7 +23,7 @@ export default async function serviceApp (
   // This loads all external plugins defined in plugins/external
   // those should be registered first as your application plugins might depend on them
   await fastify.register(fastifyAutoload, {
-    dir: path.join(import.meta.dirname, 'plugins/external'),
+    dir: path.join(__dirname, 'plugins/external'),
     options: {}
   })
 
@@ -31,20 +31,20 @@ export default async function serviceApp (
   // those should be support plugins that are reused
   // through your application
   fastify.register(fastifyAutoload, {
-    dir: path.join(import.meta.dirname, 'plugins/app'),
+    dir: path.join(__dirname, 'plugins/app'),
     options: { ...opts }
   })
 
   // This loads all plugins defined in routes
   // define your routes in one of these
   fastify.register(fastifyAutoload, {
-    dir: path.join(import.meta.dirname, 'routes'),
+    dir: path.join(__dirname, 'routes'),
     autoHooks: true,
     cascadeHooks: true,
     options: { ...opts }
   })
 
-  fastify.setErrorHandler((err:any, request, reply) => {
+  fastify.setErrorHandler((err: any, request, reply) => {
     const error = {
       ...err,
       message: err.message || 'Internal Server Error',
@@ -93,5 +93,6 @@ export default async function serviceApp (
         statusCode: 404,
         fatal: false
       }
-    })
+    }
+  )
 }

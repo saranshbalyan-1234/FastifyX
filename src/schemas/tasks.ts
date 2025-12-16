@@ -10,7 +10,8 @@ export const TaskStatusEnum = {
   Archived: 'archived'
 } as const
 
-export type TaskStatusType = typeof TaskStatusEnum[keyof typeof TaskStatusEnum]
+export type TaskStatusType =
+  (typeof TaskStatusEnum)[keyof typeof TaskStatusEnum]
 
 export interface Task extends Static<typeof TaskSchema> {
   filename?: string | null
@@ -51,10 +52,11 @@ export const QueryTaskPaginationSchema = Type.Object({
   author_id: Type.Optional(IdSchema),
   assigned_user_id: Type.Optional(IdSchema),
   status: Type.Optional(TaskStatusSchema),
-  order: Type.Optional(Type.Union([
-    Type.Literal('asc'),
-    Type.Literal('desc')
-  ], { default: 'desc' }))
+  order: Type.Optional(
+    Type.Union([Type.Literal('asc'), Type.Literal('desc')], {
+      default: 'desc'
+    })
+  )
 })
 
 export const TaskPaginationResultSchema = Type.Object({

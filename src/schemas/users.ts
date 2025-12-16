@@ -1,6 +1,7 @@
 import { Type } from '@sinclair/typebox'
 
-const passwordPattern = '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).*$'
+const passwordPattern =
+  '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).*$'
 
 const PasswordSchema = Type.String({
   pattern: passwordPattern,

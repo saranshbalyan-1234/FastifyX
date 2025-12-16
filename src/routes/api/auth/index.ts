@@ -1,7 +1,4 @@
-import {
-  FastifyPluginAsyncTypebox,
-  Type
-} from '@fastify/type-provider-typebox'
+import { FastifyPluginAsyncTypebox, Type } from '@fastify/type-provider-typebox'
 import { CredentialsSchema } from '../../../schemas/auth.js'
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
@@ -27,15 +24,15 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       const { email, password } = request.body
 
       return fastify.knex.transaction(async (trx) => {
-        const user = await usersRepository.findByEmail(email, trx)
+        const user = await usersRepository.findByEmail(email ?? '', trx)
 
         if (user) {
           const isPasswordValid = await passwordManager.compare(
-            password,
+            password ?? '',
             user.password
           )
           if (isPasswordValid) {
-            const roles = await usersRepository.findUserRolesByEmail(email, trx)
+            const roles = await usersRepository.findUserRolesByEmail(email ?? '', trx)
 
             request.session.user = {
               id: user.id,

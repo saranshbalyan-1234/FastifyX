@@ -4,7 +4,7 @@ import knex, { Knex } from 'knex'
 
 declare module 'fastify' {
   export interface FastifyInstance {
-    knex: Knex;
+    knex: Knex
   }
 }
 
@@ -22,10 +22,13 @@ export const autoConfig = (fastify: FastifyInstance) => {
   }
 }
 
-export default fp(async (fastify: FastifyInstance, opts) => {
-  fastify.decorate('knex', knex(opts))
+export default fp(
+  async (fastify: FastifyInstance, opts) => {
+    fastify.decorate('knex', knex(opts))
 
-  fastify.addHook('onClose', async (instance) => {
-    await instance.knex.destroy()
-  })
-}, { name: 'knex' })
+    fastify.addHook('onClose', async (instance) => {
+      await instance.knex.destroy()
+    })
+  },
+  { name: 'knex' }
+)
