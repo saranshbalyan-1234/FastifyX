@@ -322,7 +322,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         tags: ['Tasks']
       }
     },
-    async function (request, reply) {
+    async (_request, reply): Promise<void> => {
       const queryStream = tasksRepository.createStream()
 
       const csvTransform = stringify({
@@ -336,7 +336,8 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         `attachment; filename="${encodeURIComponent('tasks.csv.gz')}"`
       )
 
-      return queryStream.pipe(csvTransform).pipe(createGzip())
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      reply.send(queryStream.pipe(csvTransform).pipe(createGzip()) as any)
     }
   )
 }

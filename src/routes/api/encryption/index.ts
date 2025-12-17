@@ -1,10 +1,9 @@
 import { FastifyPluginAsyncTypebox, Type } from '@fastify/type-provider-typebox'
-import { Static } from '@sinclair/typebox'
 import forge from 'node-forge'
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   /* ---------- Schemas ---------- */
-  const AnySchema = Type.Union([Type.String(), Type.Object({})])
+  const AnySchema = Type.Object({}, { additionalProperties: true })
 
   const EncryptedResponseSchema = Type.Object({
     encryptedAESKey: Type.String(),
@@ -30,7 +29,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     '/encrypt',
     { schema: { body: AnySchema, response: { 200: EncryptedResponseSchema } } },
     async (request) => {
-      const body = request.body as Static<typeof AnySchema>
+      const body = request.body as Record<string, unknown>
       return fastify.secure.encrypt(body)
     }
   )
@@ -40,7 +39,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     '/decrypt',
     { schema: { body: DecryptRequestSchema, response: { 200: AnySchema } } },
     async (request) => {
-      const body = request.body as Static<typeof DecryptRequestSchema>
+      const body = request.body as Record<string, string>
       return fastify.secure.decrypt(
         body.encryptedAESKey,
         body.encryptedData,
@@ -56,7 +55,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       schema: { body: AnySchema, response: { 200: AesEncryptResponseSchema } }
     },
     async (request) => {
-      const body = request.body as Static<typeof AnySchema>
+      const body = request.body as Record<string, unknown>
       // Generate AES key per request
       const key = forge.random.getBytesSync(16)
       const plaintext =
@@ -70,7 +69,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     '/aes-decrypt',
     { schema: { body: DecryptRequestSchema, response: { 200: AnySchema } } },
     async (request) => {
-      const body = request.body as Static<typeof DecryptRequestSchema>
+      const body = request.body as Record<string, string>
       return fastify.secure.aesDecrypt(
         body.encryptedData,
         fastify.secure.rsaDecrypt(body.encryptedAESKey),
@@ -89,7 +88,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       }
     },
     async (request) => {
-      const body = request.body as Static<typeof AnySchema>
+      const body = request.body as Record<string, unknown>
       const plaintext =
         typeof body.data === 'string' ? body.data : JSON.stringify(body.data)
       return { encrypted: fastify.secure.rsaEncrypt(plaintext) }

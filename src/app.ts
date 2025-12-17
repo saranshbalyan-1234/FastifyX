@@ -18,7 +18,7 @@ export const options = {
 export default async function serviceApp(
   fastify: FastifyInstance,
   opts: FastifyPluginOptions
-) {
+): Promise<void> {
   delete opts.skipOverride // This option only serves testing purpose
   // This loads all external plugins defined in plugins/external
   // those should be registered first as your application plugins might depend on them
@@ -44,6 +44,7 @@ export default async function serviceApp(
     options: { ...opts }
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fastify.setErrorHandler((err: any, request, reply) => {
     const error = {
       ...err,

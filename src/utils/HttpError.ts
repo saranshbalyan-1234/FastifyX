@@ -22,6 +22,7 @@ class HttpError extends OriginalError {
 }
 
 // Attach globally
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ;(global as any).HttpError = HttpError
 
 // Typings for TypeScript

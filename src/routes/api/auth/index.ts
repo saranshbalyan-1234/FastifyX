@@ -32,7 +32,10 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
             user.password
           )
           if (isPasswordValid) {
-            const roles = await usersRepository.findUserRolesByEmail(email ?? '', trx)
+            const roles = await usersRepository.findUserRolesByEmail(
+              email ?? '',
+              trx
+            )
 
             request.session.user = {
               id: user.id,
