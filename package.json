@@ -75,7 +75,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "fastify-tsconfig": "^3.0.0",
     "form-data": "^4.0.4",
-    "glob": "^11.0.3",
+    "glob": "^13.0.0",
     "neostandard": "^0.12.2",
     "prettier": "^3.7.4",
     "tsx": "^4.20.5",
